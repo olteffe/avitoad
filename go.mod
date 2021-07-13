@@ -1,4 +1,4 @@
-module avitoad
+module github.com/olteffe/avitoad
 
 go 1.16
 

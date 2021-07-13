@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/olteffe/avitoad/internal/database/pg"
 	"net/http"
 	"time"
 
@@ -25,7 +26,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// Create database connection.
-	db, err := database.OpenDBConnection()
+	db, err := pg.OpenDBConnection()
 	if err != nil {
 		// Return status 500 and database connection error.
 		payload, _ := json.Marshal(map[string]interface{}{
@@ -87,7 +88,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create database connection.
-	db, err := database.OpenDBConnection()
+	db, err := pg.OpenDBConnection()
 	if err != nil {
 		// Return status 500 and database connection error.
 		payload, _ := json.Marshal(map[string]interface{}{
@@ -179,7 +180,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Create database connection.
-		db, err := database.OpenDBConnection()
+		db, err := pg.OpenDBConnection()
 		if err != nil {
 			// Return status 500 and database connection error.
 			payload, _ := json.Marshal(map[string]interface{}{
@@ -272,7 +273,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create database connection.
-	db, err := database.OpenDBConnection()
+	db, err := pg.OpenDBConnection()
 	if err != nil {
 		// Return status 500 and database connection error.
 		payload, _ := json.Marshal(map[string]interface{}{
@@ -386,7 +387,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create database connection.
-	db, err := database.OpenDBConnection()
+	db, err := pg.OpenDBConnection()
 	if err != nil {
 		// Return status 500 and database connection error.
 		payload, _ := json.Marshal(map[string]interface{}{

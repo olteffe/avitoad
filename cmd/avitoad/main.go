@@ -7,7 +7,7 @@ import (
 	"github.com/olteffe/avitoad/internal/utils"
 
 	_ "github.com/joho/godotenv/autoload" // load .env file automatically
-	_ "github.com/olteffe/avitoad/docs"   // load Swagger docs
+	//_ "github.com/olteffe/avitoad/docs"   // load Swagger docs
 )
 
 // main func
