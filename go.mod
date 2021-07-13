@@ -1,4 +1,4 @@
-module avitoAd
+module avitoad
 
 go 1.16
 
