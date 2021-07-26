@@ -23,5 +23,5 @@ func SwaggerRoutes(router *mux.Router) {
 	)
 
 	// Routes for GET method:
-	router.PathPrefix("/swagger/").Handler(getSwagger).Methods(http.MethodGet) // get one user by ID
+	router.PathPrefix("/swagger/").Handler(getSwagger).Methods(http.MethodGet) // get one ad by ID
 }

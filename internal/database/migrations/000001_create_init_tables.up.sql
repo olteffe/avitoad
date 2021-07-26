@@ -5,14 +5,14 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 SET TIMEZONE="Europe/Moscow";
 
 -- Create users table
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS ads (
     id UUID DEFAULT uuid_generate_v4 () PRIMARY KEY,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
-    updated_at TIMESTAMP NULL,
-    email VARCHAR (255) NOT NULL UNIQUE,
-    user_status INT NOT NULL,
-    user_attrs JSONB NOT NULL
+    name varchar(200),
+    about text,
+    photos text[3],
+    price numeric(12,2),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW ()
 );
 
 -- Add indexes
-CREATE INDEX active_users ON users (email) WHERE user_status = 1;
+--TODO later

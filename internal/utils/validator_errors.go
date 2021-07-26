@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/go-playground/validator"
+	"github.com/go-playground/validator/v10"
 )
 
 // ValidatorErrors func for show validation errors for each invalid fields.

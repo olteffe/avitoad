@@ -1,17 +1,17 @@
 package validators
 
 import (
-	"github.com/go-playground/validator"
 	"reflect"
 	"regexp"
 	"strings"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 )
 
-// UserValidator func for create a new validator for expected fields,
+// AdValidator func for create a new validator for expected fields,
 // register function to get tag name from `json` tags.
-func UserValidator() *validator.Validate {
+func AdValidator() *validator.Validate {
 	// Create a new validator.
 	v := validator.New()
 
@@ -28,7 +28,7 @@ func UserValidator() *validator.Validate {
 		return name
 	})
 
-	// Validator for user ID (UUID).
+	// Validator for Ad ID (UUID).
 	_ = v.RegisterValidation("id", func(fl validator.FieldLevel) bool {
 		// Define field as string.
 		field := fl.Field().String()

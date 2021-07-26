@@ -4,7 +4,7 @@ import "github.com/olteffe/avitoad/internal/queries"
 
 // Queries struct for collect all app queries.
 type Queries struct {
-	*queries.UserQueries // load queries from User model
+	*queries.AdQueries // load queries from User model
 }
 
 // OpenDBConnection func for opening database connection.
@@ -17,6 +17,6 @@ func OpenDBConnection() (*Queries, error) {
 
 	return &Queries{
 		// Set queries from models:
-		UserQueries: &queries.UserQueries{DB: db}, // from user model
+		AdQueries: &queries.AdQueries{DB: db}, // from user model
 	}, nil
 }
