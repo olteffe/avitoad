@@ -1,0 +1,12 @@
+POST http://0.0.0.0:5000/api/v1/ad
+Content-Type: application/json
+Access-Control-Allow-Origin: *
+
+{
+  "name": "some_ad_name",
+  "about": "about_ad_many_symbols",
+  "photos": "http://some.link.com/foto1",
+  "price": 100
+}
+
+

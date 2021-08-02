@@ -15,6 +15,14 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+## Project
+# Custom
+notes.txt
+task.md
+readme.md
+.env.example
+
+
 ### IDE
 # vscode
 .vscode

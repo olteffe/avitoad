@@ -9,6 +9,7 @@ notes.txt
 .env
 # temp
 *.log
+*.http
 
 ### Go template
 # Binaries for programs and plugins
@@ -17,6 +18,7 @@ notes.txt
 *.dll
 *.so
 *.dylib
+build
 
 # Test binary, built with `go test -c`
 *.test

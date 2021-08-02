@@ -1,4 +1,4 @@
-FROM golang:1.16-alpine AS builder
+FROM golang:1.16.6-alpine AS builder
 
 # Move to working directory (/build).
 WORKDIR /build
@@ -12,7 +12,7 @@ COPY . .
 
 # Set necessary environmet variables needed for our image and build the API server.
 ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
-RUN go build -ldflags="-s -w" -o avitoad .
+RUN go build -ldflags="-s -w" -o avitoad ./cmd/avitoad/main.go
 
 FROM scratch
 

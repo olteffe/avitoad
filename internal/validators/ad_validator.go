@@ -2,11 +2,9 @@ package validators
 
 import (
 	"reflect"
-	"regexp"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/google/uuid"
 )
 
 // AdValidator func for create a new validator for expected fields,
@@ -28,29 +26,31 @@ func AdValidator() *validator.Validate {
 		return name
 	})
 
-	// Validator for Ad ID (UUID).
-	_ = v.RegisterValidation("id", func(fl validator.FieldLevel) bool {
+	// Validator for ad name.
+	_ = v.RegisterValidation("name", func(fl validator.FieldLevel) bool {
 		// Define field as string.
 		field := fl.Field().String()
 
-		// Return true, if UUID is not valid.
-		if _, err := uuid.Parse(field); err != nil {
-			return true
-		}
-
-		return false
+		// Return true, if string length <= 200.
+		return len(field) <= 200
 	})
 
-	// Validator for user email.
-	_ = v.RegisterValidation("email", func(fl validator.FieldLevel) bool {
+	// Validator for ad about.
+	_ = v.RegisterValidation("about", func(fl validator.FieldLevel) bool {
 		// Define field as string.
 		field := fl.Field().String()
 
-		// Simple email regexp pattern.
-		pattern := `^.+@.+\..+$`
+		// Return true, if string length <= 1000.
+		return len(field) <= 1000
+	})
 
-		// Return true, if regexp is not matching and string length > 255.
-		return regexp.MustCompile(pattern).MatchString(field) && len(field) <= 255
+	// Validator for ad about.
+	_ = v.RegisterValidation("photos", func(fl validator.FieldLevel) bool {
+		// Define field as string.
+		field := fl.Field().String()
+
+		// Return true, if length <= 300.
+		return len(field) <= 300
 	})
 
 	return v

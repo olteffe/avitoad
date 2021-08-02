@@ -3,13 +3,13 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/google/uuid"
+	"github.com/olteffe/avitoad/internal/utils"
+	"github.com/olteffe/avitoad/internal/validators"
 	"net/http"
 	"time"
 
 	"github.com/olteffe/avitoad/internal/database/pg"
 	"github.com/olteffe/avitoad/internal/models"
-	"github.com/olteffe/avitoad/internal/utils"
-	"github.com/olteffe/avitoad/internal/validators"
 )
 
 // GetAds func gets all exists ads.
@@ -19,6 +19,8 @@ import (
 // @Accept json
 // @Produce json
 // @Success 200 {array} models.Ads
+// @Failure 404 {string} string "error"
+// @Failure 500 {string} string "error"
 // @Router /v1/ads [get]
 func GetAds(w http.ResponseWriter, r *http.Request) {
 	// Define content type.
@@ -28,34 +30,17 @@ func GetAds(w http.ResponseWriter, r *http.Request) {
 	db, err := pg.OpenDBConnection()
 	if err != nil {
 		// Return status 500 and database connection error.
-		payload, _ := json.Marshal(map[string]interface{}{
-			"error": true,
-			"msg":   err.Error(),
-		})
 		w.WriteHeader(http.StatusInternalServerError)
-		_, _ = w.Write([]byte(payload))
 	}
 
 	// Get all ads.
 	ads, err := db.GetAds()
 	if err != nil {
 		// Return status 404 and not found message.
-		payload, _ := json.Marshal(map[string]interface{}{
-			"error": true,
-			"msg":   "ads were not found",
-			"count": 0,
-			"ads":   nil,
-		})
 		w.WriteHeader(http.StatusNotFound)
-		_, _ = w.Write([]byte(payload))
 	}
 
-	payload, _ := json.Marshal(map[string]interface{}{
-		"error": false,
-		"msg":   nil,
-		"count": len(ads),
-		"ads":   ads,
-	})
+	payload, _ := json.Marshal(ads)
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte(payload))
 }
@@ -66,9 +51,12 @@ func GetAds(w http.ResponseWriter, r *http.Request) {
 // @Tags Ad
 // @Accept json
 // @Produce json
-// @Param id path string true "Ad ID"
+// @Param id query UUID true "Ad ID"
 // @Success 200 {object} models.Ads
-// @Router /v1/ad/{id} [get]
+// @Failure 400 {string} string "error"
+// @Failure 404 {string} string "error"
+// @Failure 500 {string} string "error"
+// @Router /v1/ad [get]
 func GetAd(w http.ResponseWriter, r *http.Request) {
 	// Define content type and CORS.
 	w.Header().Set("Content-Type", "application/json")
@@ -77,45 +65,26 @@ func GetAd(w http.ResponseWriter, r *http.Request) {
 	// Catch ad ID from URL.
 	id, err := uuid.Parse(r.URL.Query().Get("id"))
 	if err != nil {
-		// Return status 500 and database connection error.
-		payload, _ := json.Marshal(map[string]interface{}{
-			"error": true,
-			"msg":   err.Error(),
-		})
-		w.WriteHeader(http.StatusInternalServerError)
-		_, _ = w.Write([]byte(payload))
+		// Return status 400.
+		w.WriteHeader(http.StatusBadRequest)
 	}
 
 	// Create database connection.
 	db, err := pg.OpenDBConnection()
 	if err != nil {
-		// Return status 500 and database connection error.
-		payload, _ := json.Marshal(map[string]interface{}{
-			"error": true,
-			"msg":   err.Error(),
-		})
+		// Return status 500.
 		w.WriteHeader(http.StatusInternalServerError)
-		_, _ = w.Write([]byte(payload))
 	}
 
 	// Get ad by ID.
 	ad, err := db.GetAd(id)
 	if err != nil {
-		// Return status 404 and not found message.
-		payload, _ := json.Marshal(map[string]interface{}{
-			"error": true,
-			"msg":   "ad with the given ID is not found",
-			"ad":    nil,
-		})
+		// Return status 404.
 		w.WriteHeader(http.StatusNotFound)
-		_, _ = w.Write([]byte(payload))
 	}
 
-	payload, _ := json.Marshal(map[string]interface{}{
-		"error": false,
-		"msg":   nil,
-		"ad":    ad,
-	})
+	payload, _ := json.Marshal(ad)
+	// Return status 200.
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte(payload))
 }
@@ -126,8 +95,9 @@ func GetAd(w http.ResponseWriter, r *http.Request) {
 // @Tags Ad
 // @Accept json
 // @Produce json
-// @Success 200 {object} models.Ads
-// @Security nil
+// @Success 201 {object} string "ID"
+// @Failure 400 {string} string "error"
+// @Failure 500 {string} string "error"
 // @Router /v1/ad [post]
 func CreateAd(w http.ResponseWriter, r *http.Request) {
 	// Define content type and CORS.
@@ -139,15 +109,13 @@ func CreateAd(w http.ResponseWriter, r *http.Request) {
 
 	// Checking received data from JSON body.
 	if err := r.ParseForm(); err != nil {
-		// Return status 500 and database connection error.
-		payload, _ := json.Marshal(map[string]interface{}{
-			"error": true,
-			"msg":   err.Error(),
-		})
-		w.WriteHeader(http.StatusInternalServerError)
-		_, _ = w.Write([]byte(payload))
+		// Return status 400 error.
+		w.WriteHeader(http.StatusBadRequest)
 	}
-
+	if err := json.NewDecoder(r.Body).Decode(&ad); err != nil {
+		// Return status 400 error.
+		w.WriteHeader(http.StatusBadRequest)
+	}
 	// Validate ad fields.
 	validate := validators.AdValidator()
 	if err := validate.Struct(ad); err != nil {
@@ -179,19 +147,13 @@ func CreateAd(w http.ResponseWriter, r *http.Request) {
 	// Create a new Ad with validated data.
 	if err := db.CreateAd(ad); err != nil {
 		// Return status 500 and database connection error.
-		payload, _ := json.Marshal(map[string]interface{}{
-			"error": true,
-			"msg":   err.Error(),
-		})
 		w.WriteHeader(http.StatusInternalServerError)
-		_, _ = w.Write([]byte(payload))
 	}
 
 	payload, _ := json.Marshal(map[string]interface{}{
-		"error": false,
-		"msg":   nil,
-		"ad":    ad,
+		"id": ad.ID,
 	})
-	w.WriteHeader(http.StatusOK)
+	// Return status 201 and ID.
+	w.WriteHeader(http.StatusCreated)
 	_, _ = w.Write([]byte(payload))
 }

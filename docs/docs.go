@@ -33,34 +33,6 @@ var doc = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/v1/ad": {
-            "post": {
-                "security": [
-                    {
-                        "nil": []
-                    }
-                ],
-                "description": "Create a new ad.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Ad"
-                ],
-                "summary": "create a new ad",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Ads"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/ad/{id}": {
             "get": {
                 "description": "Get ad by given ID.",
                 "consumes": [
@@ -73,20 +45,62 @@ var doc = `{
                     "Ad"
                 ],
                 "summary": "get ad by given ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Ad ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.Ads"
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new ad.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ad"
+                ],
+                "summary": "create a new ad",
+                "responses": {
+                    "201": {
+                        "description": "ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 }
@@ -114,6 +128,18 @@ var doc = `{
                                 "$ref": "#/definitions/models.Ads"
                             }
                         }
+                    },
+                    "404": {
+                        "description": "error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 }
             }
@@ -124,7 +150,6 @@ var doc = `{
             "type": "object",
             "required": [
                 "about",
-                "id",
                 "name",
                 "photos"
             ],
@@ -142,22 +167,12 @@ var doc = `{
                     "type": "string"
                 },
                 "photos": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                    "type": "string"
                 },
                 "price": {
                     "type": "integer"
                 }
             }
-        }
-    },
-    "securityDefinitions": {
-        "ApiKeyAuth": {
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
         }
     }
 }`
