@@ -38,11 +38,11 @@ func GetAds(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// Return status 404 and not found message.
 		w.WriteHeader(http.StatusNotFound)
+	} else {
+		payload, _ := json.Marshal(ads)
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(payload))
 	}
-
-	payload, _ := json.Marshal(ads)
-	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write([]byte(payload))
 }
 
 // GetAd func gets one ad by given ID or 404 error.
@@ -81,12 +81,12 @@ func GetAd(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// Return status 404.
 		w.WriteHeader(http.StatusNotFound)
+	} else {
+		payload, _ := json.Marshal(ad)
+		// Return status 200.
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(payload))
 	}
-
-	payload, _ := json.Marshal(ad)
-	// Return status 200.
-	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write([]byte(payload))
 }
 
 // CreateAd func for creates a new ad.
@@ -148,12 +148,12 @@ func CreateAd(w http.ResponseWriter, r *http.Request) {
 	if err := db.CreateAd(ad); err != nil {
 		// Return status 500 and database connection error.
 		w.WriteHeader(http.StatusInternalServerError)
+	} else {
+		payload, _ := json.Marshal(map[string]interface{}{
+			"id": ad.ID,
+		})
+		// Return status 201 and ID.
+		w.WriteHeader(http.StatusCreated)
+		_, _ = w.Write([]byte(payload))
 	}
-
-	payload, _ := json.Marshal(map[string]interface{}{
-		"id": ad.ID,
-	})
-	// Return status 201 and ID.
-	w.WriteHeader(http.StatusCreated)
-	_, _ = w.Write([]byte(payload))
 }

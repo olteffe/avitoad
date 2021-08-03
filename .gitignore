@@ -9,7 +9,7 @@ notes.txt
 .env
 # temp
 *.log
-*.http
+test.http
 
 ### Go template
 # Binaries for programs and plugins
