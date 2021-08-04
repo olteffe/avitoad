@@ -3,9 +3,11 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"github.com/olteffe/avitoad/internal/utils"
 	"github.com/olteffe/avitoad/internal/validators"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/olteffe/avitoad/internal/database/pg"
@@ -56,14 +58,21 @@ func GetAds(w http.ResponseWriter, r *http.Request) {
 // @Failure 400 {string} string "error"
 // @Failure 404 {string} string "error"
 // @Failure 500 {string} string "error"
-// @Router /v1/ad [get]
+// @Router /v1/ad/{id} [get]
 func GetAd(w http.ResponseWriter, r *http.Request) {
 	// Define content type and CORS.
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
+	// Get Query from URL if existed.
+	fields, err := strconv.ParseBool(r.URL.Query().Get("fields"))
+	if err != nil {
+		fields = false
+	}
+
 	// Catch ad ID from URL.
-	id, err := uuid.Parse(r.URL.Query().Get("id"))
+	vars := mux.Vars(r)
+	id, err := uuid.Parse(vars["id"])
 	if err != nil {
 		// Return status 400.
 		w.WriteHeader(http.StatusBadRequest)
@@ -77,7 +86,7 @@ func GetAd(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get ad by ID.
-	ad, err := db.GetAd(id)
+	ad, err := db.GetAd(id, fields)
 	if err != nil {
 		// Return status 404.
 		w.WriteHeader(http.StatusNotFound)

@@ -33,6 +33,41 @@ var doc = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/v1/ad": {
+            "post": {
+                "description": "Create a new ad.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ad"
+                ],
+                "summary": "create a new ad",
+                "responses": {
+                    "201": {
+                        "description": "ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/ad/{id}": {
             "get": {
                 "description": "Get ad by given ID.",
                 "consumes": [
@@ -59,39 +94,6 @@ var doc = `{
                         }
                     },
                     "404": {
-                        "description": "error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create a new ad.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Ad"
-                ],
-                "summary": "create a new ad",
-                "responses": {
-                    "201": {
-                        "description": "ID",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
                         "description": "error",
                         "schema": {
                             "type": "string"

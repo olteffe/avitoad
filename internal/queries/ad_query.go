@@ -17,7 +17,7 @@ func (q *AdQueries) GetAds() ([]models.Ads, error) {
 	var ads []models.Ads
 
 	// Send query to database.
-	if err := q.Select(&ads, `SELECT * FROM ads`); err != nil {
+	if err := q.Select(&ads, `SELECT id, name, photos, price, created_at FROM ads`); err != nil {
 		return []models.Ads{}, err
 	}
 
@@ -25,12 +25,18 @@ func (q *AdQueries) GetAds() ([]models.Ads, error) {
 }
 
 // GetAd func for getting one ad by given ID.
-func (q *AdQueries) GetAd(id uuid.UUID) (models.Ads, error) {
+func (q *AdQueries) GetAd(id uuid.UUID, fields bool) (models.Ads, error) {
 	// Define ad variable.
 	var ad models.Ads
 
-	// Send query to database.
-	if err := q.Get(&ad, `SELECT * FROM ads WHERE id = $1`, id); err != nil {
+	if fields {
+		// Send full-field query to database.
+		if err := q.Get(&ad, `SELECT * FROM ads WHERE id = $1`, id); err != nil {
+			return models.Ads{}, err
+		}
+	}
+	// Send query to database without additional fields.
+	if err := q.Get(&ad, `SELECT id, name, photos, price, created_at FROM ads WHERE id = $1`, id); err != nil {
 		return models.Ads{}, err
 	}
 	return ad, nil
