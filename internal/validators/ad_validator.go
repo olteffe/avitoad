@@ -47,10 +47,10 @@ func AdValidator() *validator.Validate {
 	// Validator for ad about.
 	_ = v.RegisterValidation("photos", func(fl validator.FieldLevel) bool {
 		// Define field as string.
-		field := fl.Field().String()
+		field := fl.Field().Bytes()
 
-		// Return true, if length <= 300.
-		return len(field) <= 300
+		// Return true, if length <= 3.
+		return len(field) <= 3
 	})
 
 	return v

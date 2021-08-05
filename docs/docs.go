@@ -159,7 +159,7 @@ var doc = `{
                 "about": {
                     "type": "string"
                 },
-                "created_at": {
+                "first_photo": {
                     "type": "string"
                 },
                 "id": {
@@ -169,7 +169,10 @@ var doc = `{
                     "type": "string"
                 },
                 "photos": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "price": {
                     "type": "integer"

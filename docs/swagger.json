@@ -143,7 +143,7 @@
                 "about": {
                     "type": "string"
                 },
-                "created_at": {
+                "first_photo": {
                     "type": "string"
                 },
                 "id": {
@@ -153,7 +153,10 @@
                     "type": "string"
                 },
                 "photos": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "price": {
                     "type": "integer"

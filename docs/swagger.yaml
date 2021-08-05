@@ -4,14 +4,16 @@ definitions:
     properties:
       about:
         type: string
-      created_at:
+      first_photo:
         type: string
       id:
         type: string
       name:
         type: string
       photos:
-        type: string
+        items:
+          type: string
+        type: array
       price:
         type: integer
     required:

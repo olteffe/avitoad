@@ -33,6 +33,7 @@ func GetAds(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// Return status 500 and database connection error.
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	// Get all ads.
@@ -40,11 +41,13 @@ func GetAds(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// Return status 404 and not found message.
 		w.WriteHeader(http.StatusNotFound)
-	} else {
-		payload, _ := json.Marshal(ads)
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte(payload))
+		return
 	}
+
+	payload, _ := json.Marshal(ads)
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte(payload))
+
 }
 
 // GetAd func gets one ad by given ID or 404 error.
@@ -76,6 +79,7 @@ func GetAd(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// Return status 400.
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
 	// Create database connection.
@@ -83,6 +87,7 @@ func GetAd(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// Return status 500.
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	// Get ad by ID.
@@ -90,12 +95,12 @@ func GetAd(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// Return status 404.
 		w.WriteHeader(http.StatusNotFound)
-	} else {
-		payload, _ := json.Marshal(ad)
-		// Return status 200.
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte(payload))
+		return
 	}
+	payload, _ := json.Marshal(ad)
+	// Return status 200.
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte(payload))
 }
 
 // CreateAd func for creates a new ad.
@@ -120,10 +125,12 @@ func CreateAd(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		// Return status 400 error.
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 	if err := json.NewDecoder(r.Body).Decode(&ad); err != nil {
 		// Return status 400 error.
 		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 	// Validate ad fields.
 	validate := validators.AdValidator()
@@ -135,6 +142,7 @@ func CreateAd(w http.ResponseWriter, r *http.Request) {
 		})
 		w.WriteHeader(http.StatusInternalServerError)
 		_, _ = w.Write([]byte(payload))
+		return
 	}
 
 	// Create database connection.
@@ -147,6 +155,7 @@ func CreateAd(w http.ResponseWriter, r *http.Request) {
 		})
 		w.WriteHeader(http.StatusInternalServerError)
 		_, _ = w.Write([]byte(payload))
+		return
 	}
 
 	// Set initialized default data for ad:
@@ -157,12 +166,13 @@ func CreateAd(w http.ResponseWriter, r *http.Request) {
 	if err := db.CreateAd(ad); err != nil {
 		// Return status 500 and database connection error.
 		w.WriteHeader(http.StatusInternalServerError)
-	} else {
-		payload, _ := json.Marshal(map[string]interface{}{
-			"id": ad.ID,
-		})
-		// Return status 201 and ID.
-		w.WriteHeader(http.StatusCreated)
-		_, _ = w.Write([]byte(payload))
+		return
 	}
+	payload, _ := json.Marshal(map[string]interface{}{
+		"id": ad.ID,
+	})
+	// Return status 201 and ID.
+	w.WriteHeader(http.StatusCreated)
+	_, _ = w.Write([]byte(payload))
+
 }
