@@ -16,13 +16,6 @@ import (
 	"github.com/olteffe/avitoad/internal/validators"
 )
 
-type FetchParam struct {
-	Limit  uint64 `validate:"required,lte=50"`
-	Cursor string `validate:"base64"`
-	Sort   string `validate:"required,oneof=price date"`
-	Asc    string `validate:"required,oneof=ASC DESC"`
-}
-
 // GetAds func gets all exists ads.
 // @Description Get all exists ads.
 // @Summary get all exists ads
@@ -37,7 +30,7 @@ func GetAds(w http.ResponseWriter, r *http.Request) {
 	// Define content type.
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
-	fetch := &FetchParam{}
+	fetch := models.FetchParam{}
 
 	// Get query param: limit, cursor, sort, asc if exist
 	strLimit := r.FormValue("limit")
@@ -84,7 +77,7 @@ func GetAds(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get all ads.
-	ads, err := db.GetAds(fetch)
+	ads, nextCursor, err := db.GetAds(fetch)
 	if err != nil {
 		// Return status 404 and not found message.
 		w.WriteHeader(http.StatusNotFound)
@@ -92,6 +85,7 @@ func GetAds(w http.ResponseWriter, r *http.Request) {
 	}
 
 	payload, _ := json.Marshal(ads)
+	w.Header().Set("X-NextCursor", nextCursor)
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte(payload))
 
