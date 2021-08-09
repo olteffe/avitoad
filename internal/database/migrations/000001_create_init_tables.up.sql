@@ -30,6 +30,6 @@ VALUES ('80c95ab0-a32e-4f13-9255-e83243e5ddb7', 'name1', 'about text1', '{"http:
 
 -- Add indexes
 CREATE INDEX time_ads_pagination ON ads (created_at, id);
-CREATE INDEX price_ads_pagination ON ads (created_at, id);
+CREATE INDEX price_ads_pagination ON ads (price, id);
 
 END;

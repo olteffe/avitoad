@@ -17,3 +17,10 @@ type Ads struct {
 	CreatedAt  time.Time      `db:"created_at" json:"-"`
 	FirstPhoto string         `db:"first_photo" json:"first_photo"`
 }
+
+type FetchParam struct {
+	Limit  uint64 `validate:"required,lte=50"`
+	Cursor string
+	Sort   string `validate:"required,oneof=price date"`
+	Asc    string `validate:"required,oneof=ASC DESC"`
+}

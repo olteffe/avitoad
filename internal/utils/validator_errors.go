@@ -13,6 +13,5 @@ func ValidatorErrors(err error) map[string]string {
 	for _, err := range err.(validator.ValidationErrors) {
 		fields[err.Field()] = "field " + err.StructField() + " is not valid"
 	}
-
 	return fields
 }

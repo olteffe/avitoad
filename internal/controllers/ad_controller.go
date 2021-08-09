@@ -2,16 +2,18 @@ package controllers
 
 import (
 	"encoding/json"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	"github.com/olteffe/avitoad/internal/utils"
-	"github.com/olteffe/avitoad/internal/validators"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/olteffe/avitoad/internal/database/pg"
 	"github.com/olteffe/avitoad/internal/models"
+	"github.com/olteffe/avitoad/internal/utils"
+	"github.com/olteffe/avitoad/internal/validators"
 )
 
 // GetAds func gets all exists ads.
@@ -26,7 +28,45 @@ import (
 // @Router /v1/ads [get]
 func GetAds(w http.ResponseWriter, r *http.Request) {
 	// Define content type.
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+	fetch := models.FetchParam{}
+
+	// Get query param: limit, cursor, sort, asc if exist
+	strLimit := r.FormValue("limit")
+	limit, err := strconv.ParseUint(strLimit, 10, 64)
+	if err != nil {
+		fetch.Limit = 10
+	}
+	cursor := r.FormValue("cursor")
+	sort := r.FormValue("sort")
+	asc := r.FormValue("asc")
+
+	// Set default and write query values
+	if limit == 0 && cursor == "" && sort == "" && asc == "" {
+		fetch.Limit = 10
+		fetch.Cursor = utils.EncodeCursor(time.Now(), "")
+		fetch.Sort = "date"
+		fetch.Asc = "DESC"
+	} else {
+		fetch.Limit = limit
+		fetch.Cursor = cursor
+		fetch.Sort = sort
+		fetch.Asc = strings.ToUpper(asc)
+	}
+
+	// Structure field validation
+	validate := validator.New()
+	if err := validate.Struct(fetch); err != nil {
+		// Return status 400 and  error.
+		payload, _ := json.Marshal(map[string]interface{}{
+			"error": true,
+			"msg":   utils.ValidatorErrors(err),
+		})
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = w.Write([]byte(payload))
+		return
+	}
 
 	// Create database connection.
 	db, err := pg.OpenDBConnection()
@@ -37,7 +77,7 @@ func GetAds(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get all ads.
-	ads, err := db.GetAds()
+	ads, nextCursor, err := db.GetAds(fetch)
 	if err != nil {
 		// Return status 404 and not found message.
 		w.WriteHeader(http.StatusNotFound)
@@ -45,6 +85,7 @@ func GetAds(w http.ResponseWriter, r *http.Request) {
 	}
 
 	payload, _ := json.Marshal(ads)
+	w.Header().Set("X-NextCursor", nextCursor)
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte(payload))
 
@@ -64,7 +105,7 @@ func GetAds(w http.ResponseWriter, r *http.Request) {
 // @Router /v1/ad/{id} [get]
 func GetAd(w http.ResponseWriter, r *http.Request) {
 	// Define content type and CORS.
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// Get Query from URL if existed.
@@ -115,7 +156,7 @@ func GetAd(w http.ResponseWriter, r *http.Request) {
 // @Router /v1/ad [post]
 func CreateAd(w http.ResponseWriter, r *http.Request) {
 	// Define content type and CORS.
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// Create a new ad struct.
