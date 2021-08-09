@@ -2,12 +2,13 @@ package queries
 
 import (
 	"errors"
+	"time"
+
 	sq "github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/olteffe/avitoad/internal/models"
 	"github.com/olteffe/avitoad/internal/utils"
-	"time"
 )
 
 // AdQueries struct for queries from Ads model.
@@ -47,7 +48,7 @@ func (q *AdQueries) GetAds(params models.FetchParam) (res []models.Ads, nextCurs
 		return
 	}
 
-	//
+	// Create ads
 	res = []models.Ads{}
 	var createdTime time.Time // only using one for all loops, we only need the latest one in the end
 	for rows.Next() {

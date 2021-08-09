@@ -45,7 +45,7 @@ func GetAds(w http.ResponseWriter, r *http.Request) {
 	// Set default and write query values
 	if limit == 0 && cursor == "" && sort == "" && asc == "" {
 		fetch.Limit = 10
-		fetch.Cursor = ""
+		fetch.Cursor = utils.EncodeCursor(time.Now(), "")
 		fetch.Sort = "date"
 		fetch.Asc = "DESC"
 	} else {
